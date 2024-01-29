@@ -70,7 +70,7 @@ data "aws_caller_identity" "current" {}
 
 # create lambda iam role
 resource "aws_iam_role" "lambda_role" {
-  name               = "aws_resume_lamnbda_role"
+  name               = "aws_resume_lambda_role"
   assume_role_policy = <<EOF
 {
  "Version": "2012-10-17",
@@ -90,7 +90,7 @@ EOF
 
 # create lambda iam role policy
 resource "aws_iam_policy" "iam_policy_for_lambda" {
-  name        = "iam_policy_for_aws_resume_lamnbda_role"
+  name        = "iam_policy_for_aws_resume_lambda_role"
   path        = "/"
   description = "AWS IAM Policy for aws lambda to access dynamodb"
   policy      = <<EOF
