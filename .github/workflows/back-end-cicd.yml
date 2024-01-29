@@ -43,7 +43,7 @@ jobs:
               cd infrastructure
               terraform init
               terraform plan
-              terraform apply -auto-approve -compact-warnings
+              terraform apply -compact-warnings
             env:
               AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
               AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
