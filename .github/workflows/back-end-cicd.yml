@@ -34,7 +34,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Change into infrastructure directory
+      - name: Set up infrastructure directory
         run: cd infrastructure
 
       - name: Setup Terraform
