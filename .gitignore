@@ -23,6 +23,9 @@ infrastructure/*.tfstate.*.backup
 # .tfplan files
 *.tfplan
 
+#.idea
+.idea
+
 # Crash log files
 crash.log
 
