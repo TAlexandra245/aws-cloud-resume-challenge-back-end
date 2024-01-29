@@ -15,7 +15,7 @@ infrastructure/*.tfstate.backup
 infrastructure/*.tfstate.*.backup
 
 # .terraform directory
-infrastructure/.terraform/
+.terraform/
 
 # .terraform.lock.hcl file
 .terraform.lock.hcl
