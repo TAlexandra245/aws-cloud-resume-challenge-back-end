@@ -10,12 +10,12 @@ env/
 *.env
 
 # Terraform state files
-*.tfstate
-*.tfstate.backup
-*.tfstate.*.backup
+infrastructure/*.tfstate
+infrastructure/*.tfstate.backup
+infrastructure/*.tfstate.*.backup
 
 # .terraform directory
-.terraform/
+infrastructure/.terraform/
 
 # .terraform.lock.hcl file
 .terraform.lock.hcl
@@ -27,9 +27,9 @@ env/
 crash.log
 
 # Exclude variables file
-*.auto.tfvars
+infrastructure/*.auto.tfvars
 *.auto.tfvars.json
-*.auto.tfvars.tf
+infrastructure/*.auto.tfvars.tf
 
 # Exclude override variables file
 override.tfvars
