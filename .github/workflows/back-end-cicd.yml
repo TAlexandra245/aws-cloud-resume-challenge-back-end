@@ -43,7 +43,7 @@ jobs:
         sudo mv tflint /usr/local/bin/
 
     - name: Terraform init
-      run: terraform init
+      run: cd infrastructure && terraform init
 
     - name: Run tflint
       run: tflint

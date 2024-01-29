@@ -10,10 +10,9 @@ terraform {
 }
 
 provider "aws" {
-  profile = "default" # rename your aws cli profile
+  profile = "devops_alex"
   region  = "us-east-1"
 }
-
 
 # DynamoDB Table
 resource "aws_dynamodb_table" "visitor_count_ddb" {
