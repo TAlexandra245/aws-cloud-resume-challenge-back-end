@@ -25,3 +25,20 @@ env/
 
 # Crash log files
 crash.log
+
+# Exclude variables file
+*.auto.tfvars
+*.auto.tfvars.json
+*.auto.tfvars.tf
+
+# Exclude override variables file
+override.tfvars
+override.tfvars.json
+override.tfvars.tf
+
+# Exclude CLI configuration files
+terraform.rc
+terraform.rc.json
+
+# Ignore .tfvars files that are meant to be customized
+*.example
