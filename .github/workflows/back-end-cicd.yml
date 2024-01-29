@@ -24,7 +24,7 @@ jobs:
           pip install -r requirements.txt  # Adjust based on your requirements file
 
       - name: Run Python tests
-        run: python -m unittest discover tests
+        run: python -m unittest discover test_lambda
 
   terraform:
     runs-on: ubuntu-latest
