@@ -4,7 +4,7 @@ import boto3
 
 def lambda_handler(event: any, context: any, dynamodb_resource=None):
     dynamodb = dynamodb_resource or boto3.resource('dynamodb')
-    table_name = "VisitorCounter"
+    table_name = os.environ.get('TABLE_NAME')
     table = dynamodb.Table(table_name)
 
     try:
@@ -14,7 +14,7 @@ def lambda_handler(event: any, context: any, dynamodb_resource=None):
         if "Item" in response and "counter_value" in response["Item"]:
             visit_count = response['Item']['counter_value']
         else:
-            visit_count = 0
+            raise Exception("Item with value not found")
 
         visit_count += 1
 

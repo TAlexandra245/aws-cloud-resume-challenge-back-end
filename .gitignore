@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+*.env
+
+# Terraform state files
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+
+# .terraform directory
+.terraform/
+
+# .terraform.lock.hcl file
+.terraform.lock.hcl
+
+# .tfplan files
+*.tfplan
+
+# Crash log files
+crash.log
