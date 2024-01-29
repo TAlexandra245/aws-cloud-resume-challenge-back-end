@@ -10,8 +10,8 @@ terraform {
 }
 
 provider "aws" {
-  profile                  = "default" # rename your aws cli profile
-  region                   = "us-east-1"
+  profile = "default" # rename your aws cli profile
+  region  = "us-east-1"
 }
 
 
@@ -39,6 +39,10 @@ resource "aws_dynamodb_table" "visitor_count_ddb" {
     write_capacity  = 1
   }
 
+  lifecycle {
+    prevent_destroy = true
+  }
+
   tags = {
     Name = "Cloud Resume Challenge"
   }
@@ -49,9 +53,13 @@ resource "aws_dynamodb_table_item" "visitor_count_ddb" {
   table_name = aws_dynamodb_table.visitor_count_ddb.name
   hash_key   = aws_dynamodb_table.visitor_count_ddb.hash_key
 
+  lifecycle {
+    prevent_destroy = true
+  }
+
   item = jsonencode({
-    "value_id"       = { N = "1" },  # Numeric value represented as a string
-    "counter_value"  = { N = "1" },  # Numeric value represented as a string
+    "value_id"      = { N = "1" },
+    "counter_value" = { N = "1" },
   })
 }
 
@@ -150,61 +158,60 @@ resource "aws_lambda_function" "terraform_lambda_func" {
 
 }
 
-# create api gateway
-resource "aws_apigatewayv2_api" "visitor_counter_api" {
-  name          = "ViewsCounter"
-  protocol_type = "HTTP"
-  description   = "Visitor counter HTTP API to invoke AWS Lambda function to update & retrieve the visitors count"
-  cors_configuration {
-      allow_credentials = false
-      allow_headers     = []
-      allow_methods     = [
-          "GET",
-          "OPTIONS",
-      ]
-      allow_origins     = [
-          "*",
-      ]
-      expose_headers    = []
-      max_age           = 0
-  }
-
+resource "aws_api_gateway_rest_api" "my_api" {
+  name = "CountViews"
 }
 
-# api gateway stage
-resource "aws_apigatewayv2_stage" "default" {
-  api_id = aws_apigatewayv2_api.visitor_counter_api.id
-  name        = "default"
-  auto_deploy = true
+resource "aws_api_gateway_resource" "my_api_resource" {
+  parent_id   = aws_api_gateway_rest_api.my_api.root_resource_id
+  path_part   = "counter"
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
 }
 
-# api gateway integration
-resource "aws_apigatewayv2_integration" "visitor_counter_api_integration" {
-  api_id = aws_apigatewayv2_api.visitor_counter_api.id
-  integration_uri    = aws_lambda_function.terraform_lambda_func.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
+resource "aws_api_gateway_method" "my_api_method" {
+  resource_id   = aws_api_gateway_resource.my_api_resource.id
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  http_method   = "GET"
+  authorization = "NONE"
 }
 
-# api gateway route
-resource "aws_apigatewayv2_route" "any" {
-  api_id = aws_apigatewayv2_api.visitor_counter_api.id
-  route_key = "ANY /counter"
-  target    = "integrations/${aws_apigatewayv2_integration.visitor_counter_api_integration.id}"
+data "aws_arn" "api_gw_deployment_arn" {
+  arn = aws_api_gateway_deployment.my_api_deploy.execution_arn
 }
 
-# api gateway lambda invocation permission
+resource "aws_api_gateway_integration" "my_api_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.my_api.id
+  resource_id             = aws_api_gateway_resource.my_api_resource.id
+  http_method             = aws_api_gateway_method.my_api_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.terraform_lambda_func.invoke_arn
+}
 
-resource "aws_lambda_permission" "api_gw" {
-
+resource "aws_lambda_permission" "apigw_lambda" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.terraform_lambda_func.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_apigatewayv2_api.visitor_counter_api.execution_arn}/*/*"
-
+  source_arn    = aws_api_gateway_rest_api.my_api.execution_arn
 }
 
-output "base_url" {
-  value = "${aws_apigatewayv2_stage.default.invoke_url}/counter"
+resource "aws_api_gateway_deployment" "my_api_deploy" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  lifecycle {
+    create_before_destroy = true
+  }
+  depends_on = [
+    aws_api_gateway_method.my_api_method,
+    aws_api_gateway_integration.my_api_integration,
+  ]
+}
+
+resource "aws_api_gateway_stage" "my_api_stage" {
+  deployment_id = aws_api_gateway_deployment.my_api_deploy.id
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  stage_name    = "developer"
+  lifecycle {
+    ignore_changes = [stage_name]
+  }
 }
