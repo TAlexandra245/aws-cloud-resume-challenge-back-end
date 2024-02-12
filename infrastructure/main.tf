@@ -9,11 +9,41 @@ terraform {
   required_version = ">= 1.2.0"
 }
 
+#terraform {
+#  backend "s3" {
+#    bucket = "terraform-file-state"
+#    key ="global/s3/terraform.tfstate"
+#    region = "us-east-1"
+#    dynamodb_table = "terraform-state-locking"
+#    encrypt = true
+#  }
+#}
+
+
 provider "aws" {
   profile = "default"
   region  = "us-east-1"
 }
 
+#S3 bucket
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "terraform-file-state"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  versioning {
+    enabled = true
+  }
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
 # DynamoDB Table
 resource "aws_dynamodb_table" "visitor_count_ddb" {
   name         = "VisitorsCounter"
@@ -44,6 +74,18 @@ resource "aws_dynamodb_table" "visitor_count_ddb" {
 
   tags = {
     Name = "Cloud Resume Challenge"
+  }
+}
+
+
+resource "aws_dynamodb_table" "terraform_locks" {
+  name         = "terraform-state-locking"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
   }
 }
 
