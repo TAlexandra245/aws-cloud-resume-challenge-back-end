@@ -9,6 +9,9 @@ venv/
 env/
 *.env
 
+
+.gitignore
+
 # Terraform state files
 infrastructure/*.tfstate
 infrastructure/*.tfstate.backup
@@ -25,6 +28,9 @@ infrastructure/*.tfstate.*.backup
 
 #.idea
 .idea
+
+#requirements
+requirements.txt
 
 # Crash log files
 crash.log

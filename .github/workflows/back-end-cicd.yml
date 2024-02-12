@@ -26,29 +26,29 @@ jobs:
       - name: Run Python tests
         run: python -m unittest discover test_lambda
 
-  terraform:
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Terraform Init
-        working-directory: ./infrastructure
-        run: terraform init
-
-      - name: Terraform Plan
-        working-directory: ./infrastructure
-        run: terraform plan
-
-      - name: Terraform Apply
-        working-directory: ./infrastructure
-        run: terraform apply -auto-approve
+#  terraform:
+#    runs-on: ubuntu-latest
+#    needs: test
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v3
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ secrets.AWS_REGION }}
+#
+#      - name: Terraform Init
+#        working-directory: ./infrastructure
+#        run: terraform init
+#
+#      - name: Terraform Plan
+#        working-directory: ./infrastructure
+#        run: terraform plan
+#
+#      - name: Terraform Apply
+#        working-directory: ./infrastructure
+#        run: terraform apply -auto-approve
 
